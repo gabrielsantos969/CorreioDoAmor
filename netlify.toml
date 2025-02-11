@@ -1,3 +1,24 @@
 [build]
-  command = "npm start"
-  publish = "."
+  functions = "netlify/functions"
+  publish = "public"
+
+[[redirects]]
+  from = "/salvar"
+  to = "/.netlify/functions/salvar"
+  status = 200
+
+[[redirects]]
+  from = "/visualizar"
+  to = "/.netlify/functions/visualizar"
+  status = 200
+
+[[redirects]]
+  from = "/baixar"
+  to = "/.netlify/functions/baixar"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = true
