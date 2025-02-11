@@ -22,6 +22,9 @@ exports.handler = async (event, context) => {
     return {
       statusCode: 403,
       body: "<h3 style='color: red; text-align: center;'>Acesso negado!</h3>",
+      headers: {
+        'Content-Type': 'text/html'
+    }
     };
   }
 
@@ -32,6 +35,9 @@ exports.handler = async (event, context) => {
       return {
         statusCode: 404,
         body: "<h3 style='color: red; text-align: center;'>Nenhuma mensagem encontrada!</h3>",
+        headers: {
+            'Content-Type': 'text/html'
+        }
       };
     }
 
@@ -71,12 +77,18 @@ exports.handler = async (event, context) => {
     return {
       statusCode: 200,
       body: html,
+      headers: {
+        'Content-Type': 'text/html'
+    }
     };
   } catch (error) {
     console.error("Erro ao recuperar mensagens:", error);
     return {
       statusCode: 500,
       body: "<h3 style='color: red; text-align: center;'>Erro ao carregar mensagens.</h3>",
+      headers: {
+        'Content-Type': 'text/html'
+    }
     };
   }
 };
