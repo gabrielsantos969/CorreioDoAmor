@@ -1,4 +1,5 @@
 // netlify/functions/visualizar.js
+require("dotenv").config();
 const XLSX = require("xlsx");
 const fs = require("fs");
 
@@ -10,14 +11,20 @@ exports.handler = async (event, context) => {
     if (password !== ADMIN_PASSWORD) {
         return {
             statusCode: 403,
-            body: "<h3 style='color: red; text-align: center;'>Acesso negado!</h3>"
+            body: "<h3 style='color: red; text-align: center;'>Acesso negado!</h3>",
+            headers: {
+                'Content-Type': 'text/html'
+            }
         };
     }
 
     if (!fs.existsSync(filePath)) {
         return {
             statusCode: 404,
-            body: "<h3 style='color: red; text-align: center;'>Nenhuma mensagem encontrada!</h3>"
+            body: "<h3 style='color: red; text-align: center;'>Nenhuma mensagem encontrada!</h3>",
+            headers: {
+                'Content-Type': 'text/html'
+            }
         };
     }
 
@@ -58,6 +65,9 @@ exports.handler = async (event, context) => {
 
     return {
         statusCode: 200,
-        body: html
+        body: html,
+        headers: {
+            'Content-Type': 'text/html'
+        }
     };
 };
