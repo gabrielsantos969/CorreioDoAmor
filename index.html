@@ -1,0 +1,61 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Correio do Amor</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container text-center">
+        <h2 class="mb-4">Correio do Amor 💌</h2>
+        <form id="loveForm">
+            <div class="mb-3">
+                <input type="text" id="from" class="form-control" placeholder="De">
+                <small class="text-danger">* Não precisa se identificar</small>
+            </div>            
+            <div class="mb-3">
+                <input type="text" id="to" class="form-control" placeholder="Para" required>
+            </div>
+            <div class="mb-3">
+                <textarea id="message" class="form-control" placeholder="Mensagem" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-danger">Enviar</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("loveForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            let from = document.getElementById("from").value;
+            let to = document.getElementById("to").value;
+            let message = document.getElementById("message").value;
+            
+            fetch("/salvar", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ from, to, message })
+            })
+            .then(response => response.json())
+            .then(data => alert(data.message))
+            .catch(error => console.error("Erro ao salvar mensagem:", error));
+        });
+    </script>
+</body>
+</html>
