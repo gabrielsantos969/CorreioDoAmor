@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "babel index.js --out-file dist/index.js && copyfiles index.html dist/"
+    "build": "babel index.js --out-file dist/index.js && copyfiles index.html dist/ && copyfiles -u 1 public/**/* dist/public/"
   },
+
   "keywords": [],
   "author": "",
   "license": "ISC",

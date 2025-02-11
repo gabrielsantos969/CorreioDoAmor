@@ -27,6 +27,7 @@ var db = admin.firestore();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
 
 // Rota para salvar mensagens no Firestore
 app.post("/salvar", function (req, res) {
