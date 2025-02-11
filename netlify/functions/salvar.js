@@ -1,42 +1,47 @@
-// netlify/functions/salvar.js
-const multer = require("multer");
-const XLSX = require("xlsx");
-const fs = require("fs");
+const admin = require("firebase-admin");
+require("dotenv").config();
 
-const upload = multer();
-const filePath = "mensagens.xlsx";
+const serviceAccount = {
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+  clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+};
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com`,
+});
+
+const db = admin.firestore();
 
 exports.handler = async (event, context) => {
-    if (event.httpMethod === "POST") {
-        let { from, to, message } = JSON.parse(event.body);
-        from = from.trim() === "" ? "Anônimo" : from;
+  if (event.httpMethod !== "POST") {
+    return {
+      statusCode: 405,
+      body: JSON.stringify({ message: "Método não permitido" }),
+    };
+  }
 
-        let workbook;
-        if (fs.existsSync(filePath)) {
-            workbook = XLSX.readFile(filePath);
-        } else {
-            workbook = XLSX.utils.book_new();
-        }
+  const { from, to, message } = JSON.parse(event.body);
+  const sanitizedFrom = from.trim() === "" ? "Anônimo" : from;
 
-        let sheetName = "Mensagens";
-        if (!workbook.Sheets[sheetName]) {
-            let newSheet = XLSX.utils.aoa_to_sheet([["De", "Para", "Mensagem"]]);
-            XLSX.utils.book_append_sheet(workbook, newSheet, sheetName);
-        }
+  try {
+    await db.collection("cartinha").add({
+      from: sanitizedFrom,
+      to: to,
+      message: message,
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+    });
 
-        let worksheet = workbook.Sheets[sheetName];
-        let data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-        data.push([from, to, message]);
-
-        let newWorksheet = XLSX.utils.aoa_to_sheet(data);
-        workbook.Sheets[sheetName] = newWorksheet;
-        XLSX.writeFile(workbook, filePath);
-
-        return {
-            statusCode: 200,
-            body: JSON.stringify({ success: true, message: "Mensagem salva com sucesso!" })
-        };
-    }
-
-    return { statusCode: 405, body: "Method Not Allowed" };
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ success: true, message: "Mensagem salva com sucesso!" }),
+    };
+  } catch (error) {
+    console.error("Erro ao salvar a mensagem:", error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ success: false, message: "Erro ao salvar a mensagem." }),
+    };
+  }
 };
